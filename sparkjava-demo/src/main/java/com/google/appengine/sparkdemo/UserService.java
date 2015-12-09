@@ -13,7 +13,10 @@
  * implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.google.appengine.sparkdemo;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.gcloud.datastore.Datastore;
 import com.google.gcloud.datastore.DatastoreOptions;
@@ -25,94 +28,67 @@ import com.google.gcloud.datastore.Query;
 import com.google.gcloud.datastore.QueryResults;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UserService {
 
-  static String KINDNAME = "DEMOUSER";
-
-  static Datastore datastore = DatastoreOptions.defaultInstance().service();
+  private static final String KINDNAME = "DEMO_USER";
+  private static Datastore datastore = DatastoreOptions.defaultInstance().service();
 
   public List<User> getAllUsers() {
-    Map<String, User> users = new HashMap<>();
-
-    String gql = "SELECT * FROM " + KINDNAME;
-    Query<Entity> query = Query.gqlQueryBuilder(Query.ResultType.ENTITY, gql)
-            .build();
+    Query<Entity> query =
+        Query.gqlQueryBuilder(Query.ResultType.ENTITY, "SELECT * FROM " + KINDNAME).build();
     QueryResults<Entity> results = datastore.run(query);
-
+    List<User> users = new ArrayList<>();
     while (results.hasNext()) {
       Entity result = results.next();
-
-      User u = new User(result.getString("name"), result.getString("email"));
-
-      users.put(result.getString("name"), u);
+      users.add(
+          new User(result.getString("id"), result.getString("name"), result.getString("email")));
     }
-    return new ArrayList<>(users.values());
-  }
-
-  public User getUser(String id) {
-    System.out.println("get user called");
-    KeyFactory keyFactory = datastore.newKeyFactory().kind(KINDNAME);
-    Key key = keyFactory.newKey(id);
-    Entity entity = datastore.get(key);
-    User user = new User(entity.getString("name"), entity.getString("email"));
-    return user;
+    return users;
   }
 
   public User createUser(String name, String email) {
-    System.out.println("create user called");
-    KeyFactory keyFactory = datastore.newKeyFactory().kind(KINDNAME);
-    Key key = keyFactory.newKey(email);
-
-    FullEntity entity = Entity.builder(key)
-            .set("name", name)
-            .set("email", email)
-            .build();
-    Entity e = datastore.add(entity);
-
     failIfInvalid(name, email);
     User user = new User(name, email);
+    KeyFactory keyFactory = datastore.newKeyFactory().kind(KINDNAME);
+    Key key = keyFactory.newKey(user.getId());
+    FullEntity entity = Entity.builder(key)
+        .set("id", user.getId())
+        .set("name", name)
+        .set("email", email)
+        .build();
+    datastore.add(entity);
     return user;
   }
 
-  public String deleteUser(String id, String name, String email) {
-    System.out.println("delete user called");
+  public String deleteUser(String id) {
     KeyFactory keyFactory = datastore.newKeyFactory().kind(KINDNAME);
     Key key = keyFactory.newKey(id);
     datastore.delete(key);
-
     return "ok";
   }
 
   public User updateUser(String id, String name, String email) {
-    System.out.println("Update user called");
+    failIfInvalid(name, email);
     KeyFactory keyFactory = datastore.newKeyFactory().kind(KINDNAME);
     Key key = keyFactory.newKey(id);
     Entity entity = datastore.get(key);
     if (entity == null) {
       throw new IllegalArgumentException("No user with id '" + id + "' found");
-
     } else {
-      System.out.println("Updating access_time for " + entity.getString("name"));
       entity = Entity.builder(entity)
-              .set("name", name)
-              .set("email", email)
-              .build();
+          .set("id", id)
+          .set("name", name)
+          .set("email", email)
+          .build();
       datastore.update(entity);
     }
-    User user = new User(name, email);
-    return user;
+    return new User(id, name, email);
   }
 
   private void failIfInvalid(String name, String email) {
-    if (name == null || name.isEmpty()) {
-      throw new IllegalArgumentException("Parameter 'name' cannot be empty");
-    }
-    if (email == null || email.isEmpty()) {
-      throw new IllegalArgumentException("Parameter 'email' cannot be empty");
-    }
+    checkArgument(name != null && !name.isEmpty(), "Parameter 'name' cannot be empty");
+    checkArgument(email != null && !email.isEmpty(), "Parameter 'email' cannot be empty");
   }
 }
