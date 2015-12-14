@@ -1,9 +1,7 @@
-gcloud-java example using Managed VMs & Spark
-=============================================
+gcloud-java example using Managed VMs & SparkJava
+=================================================
 
-This app demonstrates how to use [`gcloud-java`'s Datastore client](https://github.com/GoogleCloudPlatform/gcloud-java/tree/master/gcloud-java-datastore#google-cloud-java-client-for-datastore) from within an [App Engine Managed VM](https://cloud.google.com/appengine/docs/java/managed-vms/) project using [Spark](http://sparkjava.com/). The app allows you to create and modify a database of "users", which contains their ID, name, and email information. 
-
-> Note: this project is currently in development.
+This app demonstrates how to use [`gcloud-java`'s Datastore client](https://github.com/GoogleCloudPlatform/gcloud-java/tree/master/gcloud-java-datastore#google-cloud-java-client-for-datastore) from within an [App Engine Managed VM](https://cloud.google.com/appengine/docs/java/managed-vms/) project using [SparkJava](http://sparkjava.com/). The app allows you to create and modify a database of "users", which contains their ID, name, and email information. 
 
 Running the application
 -----------------------
@@ -25,7 +23,7 @@ How does it work?
 
 You'll notice that the source code is split into three folders: `appengine`, `java/com/google/appengine/sparkdemo`, and `resource/public`. The `appengine` folder contains a `Dockerfile` and an `app.yaml`, necessary files to [configure the VM environment](https://cloud.google.com/appengine/docs/managed-vms/config). The `java/com/google/appengine/sparkdemo` folder contains the controller code, which uses the `gcloud-java` library to modify the records in the Google Cloud Datastore. Finally, the `resource/public` folder contains the home webpage, which uses jQuery to send HTTP requests to create, remove, and update records.
 
-Spark runs the [`main` method](https://github.com/GoogleCloudPlatform/gcloud-java-examples/blob/master/sparkjava-demo/src/main/java/com/google/appengine/sparkdemo/Main.java) upon server startup. The `main` method creates the controller, [`UserController`](https://github.com/GoogleCloudPlatform/gcloud-java-examples/blob/master/sparkjava-demo/src/main/java/com/google/appengine/sparkdemo/UserController.java).The URIs used to send HTTP requests in the [home page](https://github.com/GoogleCloudPlatform/gcloud-java-examples/blob/master/sparkjava-demo/src/main/resources/public/index.html) correspond to methods in the `UserController` class. For example, the `index.html` code for `create` makes a `POST` request to the path "/api/users" with a body containing the name and email of a user to add. `UserController` contains the following code to process that request:
+SparkJava runs the [`main` method](https://github.com/GoogleCloudPlatform/gcloud-java-examples/blob/master/sparkjava-demo/src/main/java/com/google/appengine/sparkdemo/Main.java) upon server startup. The `main` method creates the controller, [`UserController`](https://github.com/GoogleCloudPlatform/gcloud-java-examples/blob/master/sparkjava-demo/src/main/java/com/google/appengine/sparkdemo/UserController.java).The URIs used to send HTTP requests in the [home page](https://github.com/GoogleCloudPlatform/gcloud-java-examples/blob/master/sparkjava-demo/src/main/resources/public/index.html) correspond to methods in the `UserController` class. For example, the `index.html` code for `create` makes a `POST` request to the path "/api/users" with a body containing the name and email of a user to add. `UserController` contains the following code to process that request:
 
 ```java
 post("/api/users", (req, res) -> userService.createUser(
