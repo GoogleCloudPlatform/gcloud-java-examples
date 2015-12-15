@@ -16,6 +16,7 @@
 
 package com.google.appengine.sparkdemo;
 
+import java.util.UUID;
 
 public class User {
 
@@ -24,34 +25,36 @@ public class User {
   private String email;
 
   public User(String name, String email) {
-    // for now the key is the email. Could change if needed.
-    this.id = email;
-    this.name = name;
+    this(UUID.randomUUID().toString(), name, email);
+  }
+
+  public User(String id, String name, String email) {
+    this.id = id;
     this.email = email;
+    this.name = name;
   }
 
   public String getId() {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public String getName() {
     return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public String getEmail() {
     return email;
   }
 
+  void setId(String id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public void setEmail(String email) {
     this.email = email;
   }
-
 }

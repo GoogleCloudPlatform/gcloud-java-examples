@@ -1,4 +1,3 @@
-package com.google.appengine.sparkdemo;
 /*
  * Copyright (c) 2015 Google Inc. All Rights Reserved.
  *
@@ -15,15 +14,19 @@ package com.google.appengine.sparkdemo;
  * permissions and limitations under the License.
  */
 
-import com.google.gson.Gson;
-import spark.ResponseTransformer;
-import spark.Spark;
+package com.google.appengine.sparkdemo;
+
 import static spark.Spark.after;
 import static spark.Spark.delete;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
+
+import com.google.gson.Gson;
+
+import spark.ResponseTransformer;
+import spark.Spark;
 
 public class UserController {
 
@@ -32,46 +35,33 @@ public class UserController {
 
     get("/api/users", (req, res) -> userService.getAllUsers(), UserController::toJson);
 
-    get("/api/users/:id", (req, res) -> {
-      String id = req.params(":id");
-      User user = userService.getUser(id);
-      if (user != null) {
-        return user;
-      }
-      res.status(400);
-      return new ResponseError("No user with id '%s' found", id);
-    }, json());
-
-    post("/api/users", (req, res) -> userService.createUser(
-            req.queryParams("name"),
-            req.queryParams("email")
-    ), json());
+    post("/api/users",
+        (req, res) -> userService.createUser(req.queryParams("name"), req.queryParams("email")),
+        json());
 
     put("/api/users/:id", (req, res) -> userService.updateUser(
             req.params(":id"),
             req.queryParams("name"),
             req.queryParams("email")
-    ), json());
-    
-    delete("/api/users/:id", (req, res) -> userService.deleteUser(
-            req.params(":id"),
-            req.queryParams("name"),
-            req.queryParams("email")
-    ), json());
+        ), json());
+
+    delete("/api/users/:id", (req, res) -> userService.deleteUser(req.params(":id")), json());
+
     after((req, res) -> {
-      res.type("application/json");
-    });
+          res.type("application/json");
+        });
 
     exception(IllegalArgumentException.class, (e, req, res) -> {
-      res.status(400);
-      res.body(toJson(new ResponseError(e)));
-    });
+          res.status(400);
+          res.body(toJson(new ResponseError(e)));
+        });
   }
-  	private static String toJson(Object object) {
-		return new Gson().toJson(object);
-	}
 
-	private static ResponseTransformer json() {
-		return UserController::toJson;
-	}
+  private static String toJson(Object object) {
+    return new Gson().toJson(object);
+  }
+
+  private static ResponseTransformer json() {
+    return UserController::toJson;
+  }
 }
