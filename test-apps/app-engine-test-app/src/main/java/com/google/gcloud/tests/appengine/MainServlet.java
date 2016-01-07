@@ -42,13 +42,8 @@ public class MainServlet extends HttpServlet {
     if (pathInfo.length != 2) {
       printHelpMessage(responseWriter);
     } else {
-      Map params = req.getParameterMap();
-      projectId =
-          params.get("project-id") != null ? ((String[]) params.get("project-id"))[0] : null;
-      Boolean useCredentialsFile =
-          params.get("credentials-file") != null
-              ? Boolean.parseBoolean(((String[]) params.get("credentials-file"))[0]) : null;
-      if (useCredentialsFile != null) {
+      projectId = req.getParameter("project-id");
+      if (Boolean.parseBoolean(req.getParameter("credentials-file"))) {
         ServletContext context = getServletContext();
         InputStream in =
             context.getResourceAsStream("/WEB-INF/lib/my-service-account-credentials.json");
