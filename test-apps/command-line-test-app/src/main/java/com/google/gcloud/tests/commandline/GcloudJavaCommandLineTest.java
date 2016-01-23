@@ -26,7 +26,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+/**
+ * A command line application to test gcloud-java on Google Compute Engine and your desktop.
+ */
 public class GcloudJavaCommandLineTest {
+
+  /**
+   * Runs some simple tests for the service specified as a command line argument. Run this program
+   * without any arguments to see the list of services available to test.
+   *
+   * @param args [service] [project-id=your-project-id] [credentials-file=true|false]. The first
+   *     first argument, the service, is required and must be the first argument. The others are
+   *     optional.
+   * @throws IOException
+   */
   public static void main(String[] args) throws IOException {
     PrintWriter pw = new PrintWriter(System.out, true);
     String projectId = null;

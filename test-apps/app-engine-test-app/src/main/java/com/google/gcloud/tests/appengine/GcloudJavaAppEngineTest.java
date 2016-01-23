@@ -24,24 +24,43 @@ import com.google.gcloud.AuthCredentials;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class MainServlet extends HttpServlet {
+/**
+ * A servlet that runs simple gcloud-java tests for the service specified in the URL.
+ */
+public class GcloudJavaAppEngineTest extends HttpServlet {
 
+  /**
+   * Runs some simple actions for the service specified. Indicate the service to test by appending
+   * it to the URL. For example, to test datastore when running locally, navigate to
+   * {@code http://localhost:8080/datastore}.
+   *
+   * <p>There are two optional request parameters:
+   * <ul>
+   * <li> project-id=your-project-id: explicitly specify a project ID to use rather than the App
+   *     Engine default.
+   * <li> credentials-file=true|false: use a manually-downloaded service account credentials file
+   *     rather than the built in App Engine credentials. See additional directions in this app's
+   *     README.
+   * </ul>
+   * Here is an example of a URL to test datastore using both optional parameters when
+   * running locally:
+   * {@code http://localhost:8080/datastore?project-id=your-project-id&credentials-file=true}
+   */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     PrintWriter responseWriter = resp.getWriter();
-    String projectId = null;
-    AuthCredentials credentials = null;
     String[] pathInfo = req.getPathInfo().split("/");
     if (pathInfo.length != 2) {
       printHelpMessage(responseWriter);
     } else {
+      String projectId = null;
+      AuthCredentials credentials = null;
       projectId = req.getParameter("project-id");
       if (Boolean.parseBoolean(req.getParameter("credentials-file"))) {
         ServletContext context = getServletContext();
