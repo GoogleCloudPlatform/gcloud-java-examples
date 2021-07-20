@@ -1,3 +1,9 @@
+![status: inactive](https://img.shields.io/badge/status-inactive-red.svg)
+
+This project is no longer actively developed or maintained.
+
+For new work on this check out [Google Cloud Java Client Libraries](https://github.com/googleapis/google-cloud-java).
+
 gcloud-java Test Applications
 ==================================
 
